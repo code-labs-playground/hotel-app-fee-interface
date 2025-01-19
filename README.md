@@ -1,0 +1,2 @@
+# hotel-fee-app-interface
+The Hotel Fee Calculator App features a dual calendar picker for check-in and check-out dates, displaying real-time fee calculations with daily rates and total costs. Users can calculate, clear, or confirm their selections easily, offering a seamless experience for quick and accurate stay cost estimation.
