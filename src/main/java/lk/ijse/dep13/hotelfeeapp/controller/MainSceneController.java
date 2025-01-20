@@ -8,6 +8,8 @@ import javafx.scene.text.Text;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MainSceneController {
     public DatePicker checkIn;
@@ -19,7 +21,12 @@ public class MainSceneController {
 
     public void initialize() {
         spnCount.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 0));
+        spnCount.valueProperty().addListener((observable, oldValue, newValue) -> {
+            getTotal();
+        });
+
         checkOut.setDisable(checkIn.getValue() == null);
+        txtTotal.setText("0.00");
 
         LocalDate today = LocalDate.now();
         // CheckIn Validation
@@ -32,12 +39,12 @@ public class MainSceneController {
                 }
             }
         });
-        LocalDate checkInDate = checkIn.getValue();
 
         // CheckOut Validation
         checkIn.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 checkOut.setDisable(false);
+                getTotal();
             }
         });
 
@@ -46,7 +53,7 @@ public class MainSceneController {
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
                 if (checkIn.getValue() != null) {
-                    if (date.isBefore(checkIn.getValue().plusDays(1)) || date.isAfter(checkIn.getValue().plusDays(4))) {
+                    if (date.isBefore(checkIn.getValue().plusDays(1)) || date.isAfter(checkIn.getValue().plusDays(6))) {
                         setDisable(true);
                     }
                 } else {
@@ -55,7 +62,25 @@ public class MainSceneController {
             }
         });
 
+        checkOut.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                getTotal();
+            }
+        });
+    }
 
-        txtTotal.setText("0.00");
+    private void getTotal() {
+        LocalDate checkInDate = checkIn.getValue();
+        LocalDate checkOutDate = checkOut.getValue();
+        long count = spnCount.getValue();
+
+        if (checkInDate != null && checkOutDate != null) {
+            long dayCount = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+
+            BigDecimal total = PERDAYCOST.multiply(new BigDecimal(dayCount)).multiply(new BigDecimal(count));
+            txtTotal.setText(String.format("%.2f", total));
+        } else {
+            txtTotal.setText("0.00");
+        }
     }
 }
