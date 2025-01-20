@@ -45,7 +45,11 @@ public class MainSceneController {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-                if (checkInDate != null && date.isBefore(checkInDate.plusDays(4))) {
+                if (checkIn.getValue() != null) {
+                    if (date.isBefore(checkIn.getValue().plusDays(1)) || date.isAfter(checkIn.getValue().plusDays(4))) {
+                        setDisable(true);
+                    }
+                } else {
                     setDisable(true);
                 }
             }
